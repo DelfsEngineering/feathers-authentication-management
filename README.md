@@ -1,3 +1,5 @@
+## Forked to allow the `/user` service params passing
+
 ## feathers-authentication-management
 
 [![Greenkeeper badge](https://badges.greenkeeper.io/feathersjs/feathers-authentication-management.svg)](https://greenkeeper.io/)
