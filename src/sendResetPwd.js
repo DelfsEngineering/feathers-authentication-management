@@ -1,4 +1,3 @@
-
 /* eslint-env node */
 
 const debug = require('debug')('authManagement:sendResetPwd');
@@ -13,7 +12,7 @@ const {
   concatIDAndHash
 } = require('./helpers');
 
-module.exports = function sendResetPwd (options, identifyUser, notifierOptions) {
+module.exports = function sendResetPwd(options, identifyUser, notifierOptions) {
   debug('sendResetPwd');
   const users = options.app.service(options.service);
   const usersIdName = users.id;
@@ -27,10 +26,11 @@ module.exports = function sendResetPwd (options, identifyUser, notifierOptions) 
   return Promise.resolve()
     .then(() => {
       ensureObjPropsValid(identifyUser, options.identifyUserProps);
-
+      var params = notifierOptions.params // new
+      params.query = identifyUser
       return Promise.all([
-        users.find({ query: identifyUser })
-          .then(data => getUserData(data, checkProps)),
+        users.find(params)
+        .then(data => getUserData(data, checkProps)),
         getLongToken(options.longTokenLen),
         getShortToken(options.shortTokenLen, options.shortTokenDigits)
       ]);
@@ -47,9 +47,8 @@ module.exports = function sendResetPwd (options, identifyUser, notifierOptions) 
       user,
       hashPassword(options.app, user.resetToken),
       hashPassword(options.app, user.resetShortToken)
-    ])
-    )
-    .then(([ user, longToken, shortToken ]) =>
+    ]))
+    .then(([user, longToken, shortToken]) =>
       patchUser(user, {
         resetExpires: user.resetExpires,
         resetToken: longToken,
@@ -58,8 +57,8 @@ module.exports = function sendResetPwd (options, identifyUser, notifierOptions) 
     )
     .then(user => sanitizeUserForClient(user));
 
-  function patchUser (user, patchToUser) {
-    return users.patch(user[usersIdName], patchToUser, {}) // needs users from closure
+  function patchUser(user, patchToUser) {
+    return users.patch(user[usersIdName], patchToUser, params) // needs users from closure
       .then(() => Object.assign(user, patchToUser));
   }
 };

@@ -1,4 +1,3 @@
-
 /* eslint-env node */
 
 const errors = require('@feathersjs/errors');
@@ -28,21 +27,21 @@ const optionsDefault = {
   sanitizeUserForClient
 };
 
-module.exports = function (options1 = {}) {
+module.exports = function(options1 = {}) {
   debug('service being configured.');
   const options = Object.assign({}, optionsDefault, options1);
 
-  return function () {
+  return function() {
     return authManagement(options, this);
   };
 };
 
-function authManagement (options, app) { // 'function' needed as we use 'this'
+function authManagement(options, app) { // 'function' needed as we use 'this'
   debug('service initialized');
   options.app = app;
 
   options.app.use(options.path, {
-    create (data) {
+    create(data) {
       debug(`service called. action=${data.action}`);
 
       switch (data.action) {
@@ -51,13 +50,13 @@ function authManagement (options, app) { // 'function' needed as we use 'this'
         case 'resendVerifySignup':
           return resendVerifySignup(options, data.value, data.notifierOptions);
         case 'verifySignupLong':
-          return verifySignupWithLongToken(options, data.value);
+          return verifySignupWithLongToken(options, data.value, data.notifierOptions.params);
         case 'verifySignupShort':
-          return verifySignupWithShortToken(options, data.value.token, data.value.user);
+          return verifySignupWithShortToken(options, data.value.token, data.value.user, data.notifierOptions.params);
         case 'sendResetPwd':
           return sendResetPwd(options, data.value, data.notifierOptions);
         case 'resetPwdLong':
-          return resetPwdWithLongToken(options, data.value.token, data.value.password);
+          return resetPwdWithLongToken(options, data.value.token, data.value.password, data.notifierOptions.params);
         case 'resetPwdShort':
           return resetPwdWithShortToken(
             options, data.value.token, data.value.user, data.value.password);
@@ -70,8 +69,7 @@ function authManagement (options, app) { // 'function' needed as we use 'this'
         case 'options':
           return Promise.resolve(options);
         default:
-          return Promise.reject(new errors.BadRequest(`Action '${data.action}' is invalid.`,
-            { errors: { $className: 'badParams' } }));
+          return Promise.reject(new errors.BadRequest(`Action '${data.action}' is invalid.`, { errors: { $className: 'badParams' } }));
       }
     }
   });
