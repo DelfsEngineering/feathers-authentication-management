@@ -58,7 +58,7 @@ module.exports = function sendResetPwd(options, identifyUser, notifierOptions) {
     .then(user => sanitizeUserForClient(user));
 
   function patchUser(user, patchToUser) {
-    return users.patch(user[usersIdName], patchToUser, params) // needs users from closure
+    return users.patch(user[usersIdName], patchToUser, notifierOptions.params) // needs users from closure
       .then(() => Object.assign(user, patchToUser));
   }
 };
