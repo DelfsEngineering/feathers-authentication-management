@@ -1,4 +1,3 @@
-
 /* eslint-env node */
 
 const errors = require('@feathersjs/errors');
@@ -11,41 +10,40 @@ const {
   notifier
 } = require('./helpers');
 
-module.exports.verifySignupWithLongToken = function (options, verifyToken) {
+module.exports.verifySignupWithLongToken = function(options, verifyToken, params) {
   return Promise.resolve()
     .then(() => {
       ensureValuesAreStrings(verifyToken);
 
-      return verifySignup(options, { verifyToken }, { verifyToken });
+      return verifySignup(options, { verifyToken }, { verifyToken }, params);
     });
 };
 
-module.exports.verifySignupWithShortToken = function (options, verifyShortToken, identifyUser) {
+module.exports.verifySignupWithShortToken = function(options, verifyShortToken, identifyUser, params) {
   return Promise.resolve()
     .then(() => {
       ensureValuesAreStrings(verifyShortToken);
       ensureObjPropsValid(identifyUser, options.identifyUserProps);
 
-      return verifySignup(options, identifyUser, { verifyShortToken });
+      return verifySignup(options, identifyUser, { verifyShortToken }, params);
     });
 };
 
-function verifySignup (options, query, tokens) {
+function verifySignup(options, query, tokens, params) {
   debug('verifySignup', query, tokens);
   const users = options.app.service(options.service);
   const usersIdName = users.id;
   const {
     sanitizeUserForClient
   } = options;
-
-  return users.find({ query })
+  params.query = query
+  return users.find(params)
     .then(data => getUserData(data, ['isNotVerifiedOrHasVerifyChanges', 'verifyNotExpired']))
     .then(user => {
       if (!Object.keys(tokens).every(key => tokens[key] === user[key])) {
         return eraseVerifyProps(user, user.isVerified)
           .then(() => {
-            throw new errors.BadRequest('Invalid token. Get for a new one. (authManagement)',
-              { errors: { $className: 'badParam' } });
+            throw new errors.BadRequest('Invalid token. Get for a new one. (authManagement)', { errors: { $className: 'badParam' } });
           });
       }
 
@@ -54,7 +52,7 @@ function verifySignup (options, query, tokens) {
         .then(user1 => sanitizeUserForClient(user1));
     });
 
-  function eraseVerifyProps (user, isVerified, verifyChanges) {
+  function eraseVerifyProps(user, isVerified, verifyChanges) {
     const patchToUser = Object.assign({}, verifyChanges || {}, {
       isVerified,
       verifyToken: null,
@@ -66,8 +64,8 @@ function verifySignup (options, query, tokens) {
     return patchUser(user, patchToUser);
   }
 
-  function patchUser (user, patchToUser) {
-    return users.patch(user[usersIdName], patchToUser, {}) // needs users from closure
+  function patchUser(user, patchToUser) {
+    return users.patch(user[usersIdName], patchToUser, params) // needs users from closure
       .then(() => Object.assign(user, patchToUser));
   }
 }
