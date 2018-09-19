@@ -48,7 +48,7 @@ function verifySignup(options, query, tokens, params) {
       }
 
       return eraseVerifyProps(user, user.verifyExpires > Date.now(), user.verifyChanges || {})
-        .then(user1 => notifier(options.notifier, 'verifySignup', user1))
+        .then(user1 => notifier(options.notifier, 'verifySignup', user1, params))
         .then(user1 => sanitizeUserForClient(user1));
     });
 
