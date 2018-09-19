@@ -26,7 +26,7 @@ module.exports = function resendVerifySignup(options, identifyUser, notifierOpti
         options.identifyUserProps.concat('verifyToken', 'verifyShortToken')
       );
 
-      var params = notifierOptions.params // new
+      var params = notifierOptions // new
       params.query = identifyUser
       return params;
     })
@@ -50,7 +50,7 @@ module.exports = function resendVerifySignup(options, identifyUser, notifierOpti
     .then(user => sanitizeUserForClient(user));
 
   function patchUser(user, patchToUser) {
-    return users.patch(user[usersIdName], patchToUser, notifierOptions.params) // needs users from closure
+    return users.patch(user[usersIdName], patchToUser, notifierOptions) // needs users from closure
       .then(() => Object.assign(user, patchToUser));
   }
 };
