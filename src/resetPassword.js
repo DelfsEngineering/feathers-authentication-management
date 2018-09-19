@@ -91,7 +91,7 @@ function resetPassword(options, query, tokens, password, params) {
           resetShortToken: null,
           resetExpires: null
         })
-        .then(user1 => notifier(options.notifier, 'resetPwd', user1))
+        .then(user1 => notifier(options.notifier, 'resetPwd', user1, params))
         .then(user1 => sanitizeUserForClient(user1));
     });
 
