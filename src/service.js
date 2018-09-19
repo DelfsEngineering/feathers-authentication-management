@@ -50,22 +50,22 @@ function authManagement(options, app) { // 'function' needed as we use 'this'
         case 'resendVerifySignup':
           return resendVerifySignup(options, data.value, data.notifierOptions);
         case 'verifySignupLong':
-          return verifySignupWithLongToken(options, data.value, data.notifierOptions.params);
+          return verifySignupWithLongToken(options, data.value, data.notifierOptions);
         case 'verifySignupShort':
-          return verifySignupWithShortToken(options, data.value.token, data.value.user, data.notifierOptions.params);
+          return verifySignupWithShortToken(options, data.value.token, data.value.user, data.notifierOptions);
         case 'sendResetPwd':
           return sendResetPwd(options, data.value, data.notifierOptions);
         case 'resetPwdLong':
-          return resetPwdWithLongToken(options, data.value.token, data.value.password, data.notifierOptions.params);
+          return resetPwdWithLongToken(options, data.value.token, data.value.password, data.notifierOptions);
         case 'resetPwdShort':
           return resetPwdWithShortToken(
-            options, data.value.token, data.value.user, data.value.password);
+            options, data.value.token, data.value.user, data.value.password, data.notifierOptions);
         case 'passwordChange':
           return passwordChange(
-            options, data.value.user, data.value.oldPassword, data.value.password);
+            options, data.value.user, data.value.oldPassword, data.value.password, data.notifierOptions);
         case 'identityChange':
           return identityChange(
-            options, data.value.user, data.value.password, data.value.changes);
+            options, data.value.user, data.value.password, data.value.changes, data.notifierOptions);
         case 'options':
           return Promise.resolve(options);
         default:
